@@ -1,36 +1,58 @@
 var mysql = require("mysql");
 var express = require("express");
 var app = express();
-var router = express.Router();
+bodyParser = require('body-parser');
+//var router = express.Router();
 var users = require("./routes/user");
-console.log(mysql);
-app.use(function(req, res, next){
-      res.locals.connection = mysql.createConnection({
+var index = require("./routes/index");
+//console.log(mysql);
+var cors = require('cors')
+app.use(cors()) 
+//app.set('view engine', 'jade');
+app.set('port', process.env.PORT || 3001);
+app.use(bodyParser.json());
+var connection = mysql.createConnection({
        host     : 'localhost',
        user     : 'root',
        password : 'pass',
-       database : 'db'
+       database : 'db',
+       port: '3306'
      });
-     console.log(res.locals.connection);
-     res.locals.connection.connect();
-     });
+     //console.log(res.locals.connection);
+connection.connect();
+app.get('/', function(req, res, next) {
+  //console.log(res);
+  console.log("!");
+});
+  //console.log("MADE IT", req)
+app.post('/', function(req, res, next) {
+  //console.log(res);
+  console.log("HI");
+  //res.send(req.body);
+  connection.query("SELECT * FROM users WHERE username = '" + req.body.name + "'", function(error, result) {
+    //res.send(result);
+    if (error) {
+      return error;
+    } else {
+      res.send(result);
+    }
+  });
+  //console.log("MADE IT", req);
+})
+app.get('/users', function(req, res, next) {
+  //console.log(res);
+  console.log("WE'RE HERE!");
+  console.log(req.query['username']);
+  connection.query("SELECT isOrg FROM users WHERE username='" + req.query['username'] + "';", function(error, result) {
+      console.log("result", result);
+      res.send(result);
+  });
+  //console.log("MADE IT", req);
+})
+//router.post('/user', function(req, res, next) {
+    //res.locals.connection.query('INSERT INTO users VALUES (' + user + ", " + pass + ", " + isOrg + ")", function (error, result) {
+//      console.log("MADE IT", res);
+//    });
 
-app.use('/new', users);
 // error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-var http = require('http');
-module.exports = app;
-var server = http.createServer(app);
-server.listen(4007);
+app.listen(app.get('port'), () => {console.log('Server is running on', app.get('port'))});

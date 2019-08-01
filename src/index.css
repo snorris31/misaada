@@ -1,0 +1,25 @@
+body { 
+    padding-left: 20px; 
+    padding-right: 20px; 
+}
+
+
+.header {
+    display: flex;
+    flex-direction: row;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    justify-content: flex-end;
+    width: 100%; 
+ }
+
+.header li {
+    padding-left: 20px; 
+    text-decoration: none; 
+    list-style: none; 
+}
+
+ul.header li a {
+    text-decoration: none; 
+    color: slategrey; 
+}
